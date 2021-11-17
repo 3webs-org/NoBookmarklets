@@ -1,0 +1,17 @@
+{
+    "name": "No Bookmarklets",
+    "description": "A simple chrome extension to disable bookmarklets.",
+    "version": "1.0.0",
+    "icons": {
+        "16": "icons/icon16-transparent.png",
+        "48": "icons/icon48-transparent.png",
+        "128": "icons/icon128-transparent.png"
+    },
+    "manifest_version": 3,
+    "permissions": [
+        "bookmarks"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    }
+}
