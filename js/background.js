@@ -8,25 +8,23 @@ async function scanBookmarkTree(bookmark) {
   console.log("Deleting bookmarklet:", bookmark.title, bookmark.url);
   await chrome.bookmarks.remove(bookmark.id);
 }
-chrome.runtime.onInstalled.addListener(async () => {
+
+async function fullScan() {
   const tree = await chrome.bookmarks.getTree();
   tree.forEach(scanBookmarkTree);
+}
+
+chrome.runtime.onInstalled.addListener(fullScan);
+
+chrome.runtime.onStartup.addListener(fullScan);
+
+fullScan();
+
+chrome.bookmarks.onCreated.addListener((id, bookmark) => {
+  scanBookmarkTree(bookmark);
 });
-chrome.runtime.onStartup.addListener(async () => {
-  const tree = await chrome.bookmarks.getTree();
-  tree.forEach(scanBookmarkTree);
-});
-chrome.bookmarks.onCreated.addListener(async id => {
+
+chrome.bookmarks.onChanged.addListener(async (id, changeInfo) => {
   const bm = (await chrome.bookmarks.get([id]))[0];
   scanBookmarkTree(bm);
-});
-chrome.bookmarks.onChanged.addListener(async id => {
-  const bm = (await chrome.bookmarks.get([id]))[0];
-  scanBookmarkTree(bm);
-});
-chrome.management.onEnabled.addListener(async info => {
-  if (info.id === chrome.runtime.id) {
-    const tree = await chrome.bookmarks.getTree();
-    tree.forEach(scanBookmarkTree);
-  }
 });
